@@ -3,13 +3,20 @@
 #include <windows.h>
 using namespace std;
 
+void gotoxy ( short x, short y )
+{
+  COORD coord = {x, y};
+  SetConsoleCursorPosition ( GetStdHandle ( STD_OUTPUT_HANDLE ), coord );
+}
 
 void login(){
 	system("color F0");
 	cout << "\n\t\t\t\t" << "|____/|==>> LOGIN <<==|\\____|";
-	cout << endl;
-	cout << "\n\t\t\t\t" << "  Username : ";
-	cout << "\n\t\t\t\t" << "  Password : ";
+	cout << "\n\t\t\t\t" << "|                           |";
+	cout << "\n\t\t\t\t" << "| Username :                |";
+	cout << "\n\t\t\t\t" << "| Password :                |";
+	cout << "\n\t\t\t\t" << "|___________________________|";
+	cout << "\n\t\t\t\t" << "|    \\_________________/    |";
 	cout << endl;
 	system("pause");
 	system("cls");
@@ -84,23 +91,28 @@ void exit(){
 main(){
 	int LOGIN_ACCESS = 0; //0 = admin, 1 = cashier
 	
-	login();
+	//login();
 	system("color 0a");
-	logo();
+	//logo();
 
 	char MENU = 0;
 	///main menu//
 	if(LOGIN_ACCESS == 0){
 		do{
+			system("cls");
 			cout << "\t\t\t\\\t\t  Home  \t\t/\n";
 			cout << "\t\t\t \\" << setfill('-') << setw(38) << "-/";
-			setfill(' ');
-			cout << "\n\t\t\t\t1. Penjualan";
-			cout << "\n\t\t\t\t2. Transaksi";
-			cout << "\n\t\t\t\t3. Data Barang";
-			cout << "\n\t\t\t\t4. User management";
-			cout << "\n\n\t\t\t0. Exit\n";
-			cout << "\n\t\t\tPILIH :> ";
+			cout << setfill(' ');
+			cout << "\n\t\t\t |\t" << setw(31) << left << "1. Penjualan" << '|';
+			cout << "\n\t\t\t |\t" << setw(31) << "2. Transaksi" << '|';
+			cout << "\n\t\t\t |\t" << setw(31) << "3. Data Barang" << '|';
+			cout << "\n\t\t\t |\t" << setw(31) << "4. User management" << '|';
+			cout << "\n\t\t\t |" << setw(38) << right<< '|';
+			cout << "\n\t\t\t | " << setw(36) << left << "0. Exit" << '|';
+			cout << "\n\t\t\t |" << setw(38) << right<< '|';;
+			cout << "\n\t\t\t | " << setw(36) << left << "PILIH :> " << '|';
+			cout << "\n\t\t\t/\\" << setfill('-') << setw(38) << right << "-/\\";
+			gotoxy(36,9);
 			cin >> MENU;
 			
 			switch(MENU){
