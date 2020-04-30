@@ -4,7 +4,19 @@
 #include <fstream>
 #include <string.h>
 #include <conio.h>
+#include <ctype.h>
+#include <sstream>
 using namespace std;
+
+struct barang{
+	string nama;
+	long int hargabeli, hargajual, discount;
+	int stok;
+	string barcode;
+};
+
+barang detailbarang[2];
+
 
 void gotoxy ( short x, short y )
 {
@@ -42,11 +54,11 @@ void input_line(const char *file_name,string inputdata){
 	ofs.open(file_name,ios::app);
 	
 	if(!ofs)
-		cout << "File file tidak dapat dibuka";
+		cout << "File tidak dapat dibuka";
 	else{
 		ofs << "\n" << inputdata;
 	}
-	
+	cout << "\n\nSUCCESS!\nData Berhasil Diubah";
 	ofs.close();
 }
   
@@ -112,7 +124,6 @@ void modify(){
 			cout << setw(8) << ' ' << "Password : ";
 			getline(cin,userinput);
 			databaru += userinput;
-			cout << "\n\nSUCCESS!\nData Berhasil Diubah";
 		}
 	else if(!found)
 	{
@@ -196,28 +207,143 @@ void detailtransaksi(){
 		 << "Total"
 		 << endl;
 	* */ // isi dengan data dari dalam file.
+	cout << endl;
+	system("pause");
+}
+
+void showdatabarang(){
+	cout << detailbarang[1].barcode << ' '
+	 << left << setw(25) << detailbarang[1].nama
+	 << right << setw(15) << detailbarang[1].hargabeli
+	 << setw(15) << detailbarang[1].hargajual
+	 << setw(10) << detailbarang[1].stok;
+	}
+
+bool checkspasi(){
+	int spasi=1;
+	for(int i=0; detailbarang[0].nama[i]; i++)
+	{
+		if(isspace(detailbarang[0].nama[i]))
+		{
+			spasi++;
+		}   
+    }
+    if(spasi == 1 && detailbarang[0].nama.length() < 25)
+		return(true);
+	else 
+		return(false);
 }
 
 void inputbarang(){
 cout << setfill(' ');
-cout << setw(4) << ' ' << " _____                  _    ______                             \n";
-cout << setw(4) << ' ' << "|_   _|                | |   | ___ \\                            \n";
-cout << setw(4) << ' ' << "  | | _ __  _ __  _   _| |_  | |_/ / __ _ _ __ __ _ _ __   __ _ \n";
-cout << setw(4) << ' ' << "  | || '_ \\| '_ \\| | | | __| | ___ \\/ _` | '__/ _` | '_ \\ / _` |\n";
-cout << setw(4) << ' ' << " _| || | | | |_) | |_| | |_  | |_/ / (_| | | | (_| | | | | (_| |\n";
-cout << setw(4) << ' ' << " \\___/_| |_| .__/ \\__,_|\\__| \\____/ \\__,_|_|  \\__,_|_| |_|\\__, |\n";
-cout << setw(4) << ' ' << "           | |                                             __/ |\n";
-cout << setw(4) << ' ' << "           |_|                                            |___/ 	\n";
-cout << setfill('=') << setw(120) << ' ' << endl;
-cout << setfill(' ');
-cout << endl;
-cout << setw(4) << ' ' << "Nama barang : \n"
-	 << setw(4) << ' ' << "Harga Beli \t: \n"
-	 << setw(4) << ' ' << "Harga Jual \t: \n"
-	 << setw(4) << ' ' << "Stok \t: \n";
-cout << endl;
-cout << setfill('=') << setw(120) << ' ' << endl;
-cout << setfill(' ');
+int y = 10;
+bool barang_VALIDATION = true;
+do{
+	cout << setw(4) << ' ' << " _____                  _    ______                             \n";
+	cout << setw(4) << ' ' << "|_   _|                | |   | ___ \\                            \n";
+	cout << setw(4) << ' ' << "  | | _ __  _ __  _   _| |_  | |_/ / __ _ _ __ __ _ _ __   __ _ \n";
+	cout << setw(4) << ' ' << "  | || '_ \\| '_ \\| | | | __| | ___ \\/ _` | '__/ _` | '_ \\ / _` |\n";
+	cout << setw(4) << ' ' << " _| || | | | |_) | |_| | |_  | |_/ / (_| | | | (_| | | | | (_| |\n";
+	cout << setw(4) << ' ' << " \\___/_| |_| .__/ \\__,_|\\__| \\____/ \\__,_|_|  \\__,_|_| |_|\\__, |\n";
+	cout << setw(4) << ' ' << "           | |                                             __/ |\n";
+	cout << setw(4) << ' ' << "           |_|                                            |___/ 	\n";
+	cout << setfill('=') << setw(120) << ' ' << endl;
+	cout << setfill(' ');
+	cout << endl;
+	cout << setw(4) << ' ' << "Nama barang : \n"
+		 << setw(4) << ' ' << "Harga Beli \t: \n"
+		 << setw(4) << ' ' << "Harga Jual \t: \n"
+		 << setw(4) << ' ' << "Stok \t: \n";
+	cout << endl;
+	cout << setfill('=') << setw(120) << ' ' << endl;
+	cout << setfill(' ');
+
+	gotoxy(18,y);
+	cin.ignore();
+	getline(cin, detailbarang[0].nama);
+	gotoxy(18,y+1);
+	cin >> detailbarang[0].hargabeli;
+	gotoxy(18,y+2);
+	cin >> detailbarang[0].hargajual;
+	gotoxy(18,y+3);
+	cin >> detailbarang[0].stok;
+	
+	//buat barcode
+	string BarcodeTerakhir;
+	int BarcodeInt;
+	
+		//cari barcode terakhir
+		fstream fs;
+		fs.open("myfile.txt", ios::app);
+		while(!fs.eof()){
+			fs >> detailbarang[1].barcode >> 
+			detailbarang[1].nama >> 
+			detailbarang[1].hargabeli >> 
+			detailbarang[1].hargajual >>
+			detailbarang[1].stok;
+		}
+		if(detailbarang[1].barcode.size() == 0)
+			{ 
+				BarcodeTerakhir = "SA1000000";
+			}
+		else
+			BarcodeTerakhir = detailbarang[1].barcode;
+		fs.close();
+		//cari barcode terakhir
+		
+	BarcodeTerakhir = BarcodeTerakhir.substr(2,7);
+	stringstream tostring(BarcodeTerakhir);
+	tostring >> BarcodeInt;
+	BarcodeInt = BarcodeInt + 1;
+	stringstream toint;
+	toint << BarcodeInt;
+	detailbarang[0].barcode = "SA" + toint.str();
+	//buat barcode
+	
+	system("cls");
+	if(!checkspasi()){
+		cout << "JANGAN BERI SPASI PADA NAMA BARANG!" << endl;
+		y++;
+	}
+}while(!checkspasi());
+	//mencari data yang sama
+	ifstream ifs;
+	ifs.open("myfile.txt");
+		while(!ifs.eof()){
+			ifs >> detailbarang[1].barcode >> 
+			detailbarang[1].nama >> 
+			detailbarang[1].hargabeli >> 
+			detailbarang[1].hargajual >>
+			detailbarang[1].stok;
+			
+			if( detailbarang[1].nama == detailbarang[0].nama){
+				system("cls");
+				cout << "DATA SUDAH ADA!";
+				cout << "\nData : ";
+				showdatabarang();
+				barang_VALIDATION = false;
+			}
+		}
+	ifs.close();
+	//mencari data yang sama
+	if(barang_VALIDATION)
+	{
+		ofstream ofs;
+		ofs.open("myfile.txt",ios::app);
+		ofs << endl
+			<< detailbarang[0].barcode << ' '
+			<<left << setw(25) << detailbarang[0].nama
+			<< right << setw(15) << detailbarang[0].hargabeli
+			<< setw(15) << detailbarang[0].hargajual
+			<< setw(10) << detailbarang[0].stok;
+		cout << "\nData Berhasil diinput";
+		ofs.close();
+	}
+	
+		
+	
+	cout << endl;
+	system("pause");
 }
 
 void pilihcaribarang(bool *ulang){
@@ -262,6 +388,8 @@ void editbarang(){
 		 << setw(4) << ' ' << "Harga Jual \t: \n"
 		 << setw(4) << ' ' << "Stok \t: \n";
 		 * */ // taruh di bagian input data barang sesuai pilihan cari
+	cout << endl;
+	system("pause");
 }
 
 void deletebarang(){
@@ -349,16 +477,23 @@ void exit(){
 
 
 main(){
-	int LOGIN_ACCESS = 0; //0 = admin, 1 = cashier
-	
+	int LOGIN_ACCESS = 0; //0 = admin, 1 = cashier 
+	int LAYERMENU = 1; //semakin tinggi angkanya, semakin dalam lapisannya.
+	bool BACKVALIDATION = false;
+do{
+	system("cls");
+
 	login(&LOGIN_ACCESS);
 	system("color 0a");
-	logo();
+	//logo();
 
 	char MENU = 0;
 	///main menu//
+
 	if(LOGIN_ACCESS == 0){
 		do{
+			BACKVALIDATION = false;
+			LAYERMENU = 2;
 			system("cls");
 			cout << setfill(' ');
 			cout << setw(10) << ' '<< " __  __   ___            .--.   _..._    " << endl;
@@ -410,6 +545,8 @@ cout << setw(4) << ' ' << "               \\/     \\/\\______|          \\/     
 					cout << "\n\n";
 					cout << setfill('=') << setw(120) << ' ' << endl;
 					cout << setfill(' ');
+					cout << endl;
+					system("pause");
 				break;
 				}
 				case('2'):{
@@ -418,9 +555,12 @@ cout << setw(4) << ' ' << "               \\/     \\/\\______|          \\/     
 				break;
 				}
 				case('3'):{
-					system("cls");
+					BACKVALIDATION = false;
+					LAYERMENU = 3;
 					cout << setfill(' ');
 					char MENUbarang;
+					do{
+					system("cls");
 					cout << setw(4) << ' ' << "______      _         ______   \n";                          
 					cout << setw(4) << ' ' << "|  _  \\    | |        | ___ \\ \n";                           
 					cout << setw(4) << ' ' << "| | | |__ _| |_ __ _  | |_/ / __ _ _ __ __ _ _ __   __ _ \n";
@@ -460,7 +600,7 @@ cout << setw(4) << ' ' << "               \\/     \\/\\______|          \\/     
 							deletebarang();
 						break;
 						}
-						
+						 
 						case'4':{
 							cout << endl;
 							cout << setfill('=') << setw(120) << ' ' << endl;
@@ -477,18 +617,23 @@ cout << setw(4) << ' ' << "               \\/     \\/\\______|          \\/     
 						}
 						
 						case'9':{
+							BACKVALIDATION = true;
+							LAYERMENU = 2;
 						break;
 						}
 						
 						case'0':{
-							exit(1);
+							exit();
 						break;
 						}
-					}		 
+					}
+					}while(!BACKVALIDATION || LAYERMENU == 3);	 
 				break;
 				}
 				case('4'):{
-					
+					BACKVALIDATION = false;
+					LAYERMENU = 3;
+					do{
 					char menu2;
 					system("cls");
 					cout << setfill(' ');
@@ -621,28 +766,45 @@ cout << setw(4) << ' ' << "        \\/     \\/          \\/          \\/        
 						case '4':{
 						break;
 						}
+						
+						case '9':{
+							BACKVALIDATION = true;
+							LAYERMENU = 2;
+						break;
+						}
+						case '0':{
+							exit();
+						break;
+						}
 					}
+					}while(!BACKVALIDATION || LAYERMENU == 3);
 				break;
 				}
-				case('0'):{
+				case '9':{
+					BACKVALIDATION = true;
+					LAYERMENU = 1;
+				break;
+				}
+				case '0':{
 					exit();
 				break;
 				}
 				
 			}
-			cout << endl;
-			system("pause");
-		}while(5);
+		}while(!BACKVALIDATION || LAYERMENU == 2);
 	}
 	else if(LOGIN_ACCESS == 1){
 		do{
+			BACKVALIDATION = false;
+			LAYERMENU = 2;
 			system("cls");
 			cout << "\t\t\t\\\t\t  Home  \t\t/\n";
 			cout << "\t\t\t \\" << setfill('-') << setw(38) << "-/";
 			setfill(' ');
 			cout << "\n\t\t\t\t1. Cashier";
 			cout << "\n\t\t\t\t2. Detail Transaksi";
-			cout << "\n\n\t\t\t0. Exit\n";
+			cout << "\n\n\t\t\t\t9. Back";
+			cout << "\n\t\t\t0. Exit\n";
 			cout << "\n\t\t\tPILIH :> ";
 			cin >> MENU;
 			
@@ -698,15 +860,20 @@ cout << setw(4) << ' ' << "        \\/     \\/          \\/          \\/        
 				case('2'):{
 					system("cls");
 					detailtransaksi();
-					cout << endl;	
-					system("pause");
 				break;
+				}
+				case('9'):{
+					BACKVALIDATION = true;
+					LAYERMENU = 1;
+				break;	
 				}
 				case('0'):{
 					exit();
 				break;
 				}
 			}
-		}while(5);
+		}while(!BACKVALIDATION || LAYERMENU == 2);
 	}
+cin.ignore();
+}while(BACKVALIDATION == true);
 }
