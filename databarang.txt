@@ -1,0 +1,14 @@
+
+SA1000003 ada                                    1              2         3
+SA1000004 oke                                    1              3         2
+SA1000005 oh_oke                                 1              3         4
+SA1000006 okeeeeee                               1              3         4
+SA1000007 apaini1                                2              3         4
+SA1000008 ls                                     2              3         4
+SA1000009 x                                      0              0         0
+SA1000010 jadiini                            10000          10000        10
+SA1000011 1                                      2              3         4
+SA1000012 udin                                 120              1         2
+SA1000013 inibarujuga                            1              2         3
+SA1000002 inibenerga                             1              2         3
+SA1000003 inibenerbenerbaru                      1              2         3

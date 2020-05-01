@@ -24,9 +24,9 @@ void gotoxy ( short x, short y )
   SetConsoleCursorPosition ( GetStdHandle ( STD_OUTPUT_HANDLE ), coord );
 }
 
-void delete_line(const char *file_name, int n) 
+void delete_line(const char *FILE_NAME, int n) 
 { 
-    ifstream is(file_name); //membuka file dalam read only mode;
+    ifstream is(FILE_NAME); //membuka file dalam read only mode;
     ofstream ofs; //membuka file dalam bentuk output mode
     ofs.open("temp.txt", ofstream::out); 
   
@@ -44,8 +44,8 @@ void delete_line(const char *file_name, int n)
   
     ofs.close(); // closing output file 
     is.close();  // closing input file 
-    remove(file_name);  // remove the original file 
-    rename("temp.txt", file_name);  // rename the file 
+    remove(FILE_NAME);  // remove the original file 
+    rename("temp.txt", FILE_NAME);  // rename the file 
 } 
   
 void input_line(const char *file_name,string inputdata){
@@ -234,139 +234,185 @@ bool checkspasi(){
 		return(false);
 }
 
-void inputbarang(){
-cout << setfill(' ');
-int y = 10;
-bool barang_VALIDATION = true;
-do{
-	cout << setw(4) << ' ' << " _____                  _    ______                             \n";
-	cout << setw(4) << ' ' << "|_   _|                | |   | ___ \\                            \n";
-	cout << setw(4) << ' ' << "  | | _ __  _ __  _   _| |_  | |_/ / __ _ _ __ __ _ _ __   __ _ \n";
-	cout << setw(4) << ' ' << "  | || '_ \\| '_ \\| | | | __| | ___ \\/ _` | '__/ _` | '_ \\ / _` |\n";
-	cout << setw(4) << ' ' << " _| || | | | |_) | |_| | |_  | |_/ / (_| | | | (_| | | | | (_| |\n";
-	cout << setw(4) << ' ' << " \\___/_| |_| .__/ \\__,_|\\__| \\____/ \\__,_|_|  \\__,_|_| |_|\\__, |\n";
-	cout << setw(4) << ' ' << "           | |                                             __/ |\n";
-	cout << setw(4) << ' ' << "           |_|                                            |___/ 	\n";
-	cout << setfill('=') << setw(120) << ' ' << endl;
-	cout << setfill(' ');
-	cout << endl;
-	cout << setw(4) << ' ' << "Nama barang : \n"
-		 << setw(4) << ' ' << "Harga Beli \t: \n"
-		 << setw(4) << ' ' << "Harga Jual \t: \n"
-		 << setw(4) << ' ' << "Stok \t: \n";
-	cout << endl;
-	cout << setfill('=') << setw(120) << ' ' << endl;
-	cout << setfill(' ');
+void caribarang_barcode(int *LINE,bool *FOUND){ 
+	ifstream ifs;
+	bool cari=false;
+	ifs.open("databarang.txt");
+	if(!ifs)
+		cout << "\nFile gagal dibuka";
+	else {
+		while(!ifs.eof() && !(cari)){
+				ifs >> detailbarang[1].barcode >> 
+				detailbarang[1].nama >> 
+				detailbarang[1].hargabeli >> 
+				detailbarang[1].hargajual >>
+				detailbarang[1].stok;
+				
+			if(detailbarang[0].barcode == detailbarang[1].barcode){
+				*FOUND = true;
+				cari = true;
+			}
+			else{
+				*FOUND = false;
+				cari = false;
+			}
+			*LINE +=1;
+		}
+	}
+}
 
-	gotoxy(18,y);
-	cin.ignore();
-	getline(cin, detailbarang[0].nama);
-	gotoxy(18,y+1);
-	cin >> detailbarang[0].hargabeli;
-	gotoxy(18,y+2);
-	cin >> detailbarang[0].hargajual;
-	gotoxy(18,y+3);
-	cin >> detailbarang[0].stok;
-	
+void caribarang_nama(int *LINE,bool *FOUND){ 
+	ifstream ifs;
+	bool cari=false;
+	ifs.open("databarang.txt");
+	if(!ifs)
+		cout << "\nFile gagal dibuka";
+	else {
+		while(!ifs.eof() && !(cari)){
+				ifs >> detailbarang[1].barcode >> 
+				detailbarang[1].nama >> 
+				detailbarang[1].hargabeli >> 
+				detailbarang[1].hargajual >>
+				detailbarang[1].stok;
+				
+			if(detailbarang[0].nama == detailbarang[1].nama){
+				*FOUND = true;
+				cari = true;
+			}
+			else{
+				
+				*FOUND = false;
+				cari = false;
+			}
+			(*LINE)++;
+		}
+	}
+}
+
+void inputbarang(bool *ULANG, int *y,bool BARU){
+	bool found = *ULANG;
+	int line = 0;
 	//buat barcode
 	string BarcodeTerakhir;
 	int BarcodeInt;
 	
 		//cari barcode terakhir
-		fstream fs;
-		fs.open("myfile.txt", ios::app);
-		while(!fs.eof()){
-			fs >> detailbarang[1].barcode >> 
-			detailbarang[1].nama >> 
-			detailbarang[1].hargabeli >> 
-			detailbarang[1].hargajual >>
-			detailbarang[1].stok;
-		}
-		if(detailbarang[1].barcode.size() == 0)
-			{ 
-				BarcodeTerakhir = "SA1000000";
-			}
-		else
-			BarcodeTerakhir = detailbarang[1].barcode;
-		fs.close();
-		//cari barcode terakhir
+		ofstream ofs;
+		ofs.open("databarang.txt",ios::app);
+		ofs.close();
 		
-	BarcodeTerakhir = BarcodeTerakhir.substr(2,7);
-	stringstream tostring(BarcodeTerakhir);
-	tostring >> BarcodeInt;
-	BarcodeInt = BarcodeInt + 1;
-	stringstream toint;
-	toint << BarcodeInt;
-	detailbarang[0].barcode = "SA" + toint.str();
-	//buat barcode
-	
-	system("cls");
-	if(!checkspasi()){
-		cout << "JANGAN BERI SPASI PADA NAMA BARANG!" << endl;
-		y++;
-	}
-}while(!checkspasi());
-	//mencari data yang sama
-	ifstream ifs;
-	ifs.open("myfile.txt");
-		while(!ifs.eof()){
-			ifs >> detailbarang[1].barcode >> 
-			detailbarang[1].nama >> 
-			detailbarang[1].hargabeli >> 
-			detailbarang[1].hargajual >>
-			detailbarang[1].stok;
-			
-			if( detailbarang[1].nama == detailbarang[0].nama){
-				system("cls");
-				cout << "DATA SUDAH ADA!";
-				cout << "\nData : ";
-				showdatabarang();
-				barang_VALIDATION = false;
+		ifstream ifs;
+		ifs.open("databarang.txt");
+		if(BARU){
+			//untuk buat barcode
+			while(!ifs.eof()){
+				ifs >> detailbarang[1].barcode >> 
+				detailbarang[1].nama >> 
+				detailbarang[1].hargabeli >> 
+				detailbarang[1].hargajual >>
+				detailbarang[1].stok;
+				
 			}
+			if(detailbarang[1].barcode.size() == 0)
+				{ 
+					BarcodeTerakhir = "SA1000000";
+				}
+			else
+				BarcodeTerakhir = detailbarang[1].barcode;
+					
+				//cout << BarcodeTerakhir;
+			BarcodeTerakhir = BarcodeTerakhir.substr(2,7);
+			stringstream tostring(BarcodeTerakhir);
+			tostring >> BarcodeInt;
+			BarcodeInt = BarcodeInt + 1;
+			stringstream toint;
+			toint << BarcodeInt;
+			detailbarang[0].barcode = "SA" + toint.str();
 		}
-	ifs.close();
+				ifs.close();
+	
 	//mencari data yang sama
-	if(barang_VALIDATION)
+	caribarang_nama(&line, &found);
+	//mencari data yang sama
+	if(!found)
 	{
 		ofstream ofs;
-		ofs.open("myfile.txt",ios::app);
-		ofs << endl
+		ofs.open("databarang.txt",ios::app);
+		ofs	<< endl
 			<< detailbarang[0].barcode << ' '
-			<<left << setw(25) << detailbarang[0].nama
+			<< left << setw(25) << detailbarang[0].nama
 			<< right << setw(15) << detailbarang[0].hargabeli
 			<< setw(15) << detailbarang[0].hargajual
 			<< setw(10) << detailbarang[0].stok;
-		cout << "\nData Berhasil diinput";
+			
+		cout << "\nData Berhasil diinput\n";
+		*ULANG = false;
+		cout << endl;
+		system("pause");
 		ofs.close();
 	}
+	else{
+		cout << "\nGAGAL DIINPUT, ADA DATA SAMA\n";
+		*ULANG = found;
+		(*y) +=2;
+	}
+}
 	
+
+void inputbarangmenu(){
+cout << setfill(' ');
+int y = 10;
+bool ULANG = false;
+do{ 
+	
+	do{
 		
-	
-	cout << endl;
-	system("pause");
+		cout << setw(4) << ' ' << " _____                  _    ______                             \n";
+		cout << setw(4) << ' ' << "|_   _|                | |   | ___ \\                            \n";
+		cout << setw(4) << ' ' << "  | | _ __  _ __  _   _| |_  | |_/ / __ _ _ __ __ _ _ __   __ _ \n";
+		cout << setw(4) << ' ' << "  | || '_ \\| '_ \\| | | | __| | ___ \\/ _` | '__/ _` | '_ \\ / _` |\n";
+		cout << setw(4) << ' ' << " _| || | | | |_) | |_| | |_  | |_/ / (_| | | | (_| | | | | (_| |\n";
+		cout << setw(4) << ' ' << " \\___/_| |_| .__/ \\__,_|\\__| \\____/ \\__,_|_|  \\__,_|_| |_|\\__, |\n";
+		cout << setw(4) << ' ' << "           | |                                             __/ |\n";
+		cout << setw(4) << ' ' << "           |_|                                            |___/ 	\n";
+		cout << setfill('=') << setw(120) << ' ' << endl;
+		cout << setfill(' ');
+		cout << endl;
+		
+		cout << setw(4) << ' ' << "Nama barang : \n"
+			 << setw(4) << ' ' << "Harga Beli \t: \n"
+			 << setw(4) << ' ' << "Harga Jual \t: \n"
+			 << setw(4) << ' ' << "Stok \t: \n";
+		cout << endl;
+		cout << setfill('=') << setw(120) << ' ' << endl;
+		cout << setfill(' ');
+
+		gotoxy(18,y);
+		cin.ignore();
+		getline(cin, detailbarang[0].nama);
+		gotoxy(18,y+1);
+		cin >> detailbarang[0].hargabeli;
+		gotoxy(18,y+2);
+		cin >> detailbarang[0].hargajual;
+		gotoxy(18,y+3);
+		cin >> detailbarang[0].stok;
+		system("cls");
+		if(!checkspasi()){
+			cout << "Nama barang tidak boleh memiliki spasi\n";
+			y++;
+		}
+	}while(!checkspasi());
+		y = 10;
+		inputbarang(&ULANG, &y,true);
+}while(ULANG);
 }
 
-void pilihcaribarang(bool *ulang){
-	char pilihcari;
-	cout << setw(4) << ' ' << "Cari barang" << endl
-		 << setw(6) << ' ' << "1) Barcode\n"
-		 << setw(6) << ' ' << "2) Nama\n";
-	cout << setw(4) << ' ' << "Select your option : ";
-	cin >> pilihcari;
-	if(pilihcari == '1'){
-		cout << setw(6) << ' ' << "Barcode : \n";
-		*ulang = false;
-	}
-	else if(pilihcari == '2'){
-		cout << setw(6) << ' ' << "Nama Barang : \n";
-		*ulang = false;
-	}
-}
 void editbarang(){
 	
 	cout << setfill(' ');
-	bool ulang = true;
-	do{
+	int line = 0;
+	int y = 0;
+	bool found = false , delvar = true;
 		system("cls");
 	cout << setw(4) << ' ' << " _____    _ _ _    ______                             \n";
 	cout << setw(4) << ' ' << "|  ___|  | (_) |   | ___ \\                            \n";
@@ -378,16 +424,28 @@ void editbarang(){
 	cout << setw(4) << ' ' << "                                                |___/ \n";
 	cout << setfill('=') << setw(120) << ' ' << endl;
 	cout << setfill(' ');
-	cout << endl;
-	pilihcaribarang(&ulang);
-	}while(ulang);
-	/*
-	cout << "Input data baru : \n";
-	cout << setw(4) << ' ' << "Nama barang : \n"
-		 << setw(4) << ' ' << "Harga Beli \t: \n"
-		 << setw(4) << ' ' << "Harga Jual \t: \n"
-		 << setw(4) << ' ' << "Stok \t: \n";
-		 * */ // taruh di bagian input data barang sesuai pilihan cari
+	cout << endl << endl;
+	cout << setw(6) << ' ' << "Barcode : ";
+	cin >> detailbarang[0].barcode;
+	caribarang_barcode(&line,&found);
+	if(found){
+		cout << setw(4) << ' ' << "Nama barang : "; 
+		cin.ignore();
+		getline(cin, detailbarang[0].nama);
+		cout << endl << setw(4) << ' ' << "Harga Beli \t: ";
+		cin >> detailbarang[0].hargabeli;
+		cout << endl << setw(4) << ' ' << "Harga Jual \t: ";
+		cin >> detailbarang[0].hargajual;
+		cout << endl << setw(4) << ' ' << "Stok \t: ";
+		cin >> detailbarang[0].stok;
+		cout << endl;
+		
+		inputbarang(&delvar,&y, false);
+		if(!delvar){
+			delete_line("databarang.txt",line);
+			cout << "\nData Sebelumnya berhasil diubah";
+		}
+	}
 	cout << endl;
 	system("pause");
 }
@@ -395,8 +453,8 @@ void editbarang(){
 void deletebarang(){
 	
 	cout << setfill(' ');
-	bool ulang = true;
-	do{
+	//bool ulang = true;
+
 		system("cls");
 	cout << setw(4) << ' ' << "______     _      _        ______                             \n";
 	cout << setw(4) << ' ' << "|  _  \\   | |    | |       | ___ \\                            \n";
@@ -409,8 +467,7 @@ void deletebarang(){
 	cout << setfill('=') << setw(120) << ' ' << endl;
 	cout << setfill(' ');
 	cout << endl;
-	pilihcaribarang(&ulang);
-	}while(ulang);
+	//pilihcaribarang();
 }
 void logo(){
 	int matrix[33][32]={
@@ -483,7 +540,7 @@ main(){
 do{
 	system("cls");
 
-	login(&LOGIN_ACCESS);
+	//login(&LOGIN_ACCESS);
 	system("color 0a");
 	//logo();
 
@@ -585,7 +642,7 @@ cout << setw(4) << ' ' << "               \\/     \\/\\______|          \\/     
 					switch(MENUbarang){
 						case'1':{
 							system("cls");
-							inputbarang();
+							inputbarangmenu();
 						break;
 						}
 						
