@@ -16,7 +16,8 @@ struct barang{
 };
 
 barang detailbarang[2];
-
+barang BarangSorted[1000];
+string sortingtemp[1000];
 
 void gotoxy ( short x, short y )
 {
@@ -211,6 +212,125 @@ void detailtransaksi(){
 	system("pause");
 }
 
+void selection(int arr[], int banyak){
+	int selected;
+	for(int i=0; i < banyak-1; i++){
+		selected = i;
+		for(int j = i+1; j < banyak; j++)
+			if(arr[selected] > arr[j])
+				selected = j;
+		
+		int urut = arr[selected]; 
+		
+		while( selected > i)
+		{
+			arr[selected] = arr[selected-1];
+			selected--;
+		}
+		
+		arr[i] = urut; 
+	}
+	
+}
+
+
+void sortbarcode(){
+	ifstream ifs;
+	ifs.open("databarang.txt");
+	int i=0;
+	int selected=0;
+	int temp1, temp2;
+	string barcode1,barcode2;
+	if(ifs){
+		while(ifs.peek() != EOF){
+			ifs >> detailbarang[1].barcode >> 
+				detailbarang[1].nama >> 
+				detailbarang[1].hargabeli >> 
+				detailbarang[1].hargajual >>
+				detailbarang[1].stok;
+				
+				BarangSorted[i].barcode = detailbarang[1].barcode;
+				BarangSorted[i].nama = detailbarang[1].nama;
+				BarangSorted[i].hargabeli = detailbarang[1].hargabeli;
+				BarangSorted[i].hargajual = detailbarang[1].hargajual;
+				BarangSorted[i].stok = detailbarang[1].stok;
+				
+			barcode1 = BarangSorted[i].barcode;
+			barcode1 = barcode1.substr(2,7);
+			sortingtemp[i] = barcode1;
+			i++;
+			cout << "ini i: " << i;
+		}
+		
+		for(int index1 = 0; index1 < i-1; index1++){
+			selected = index1;
+			for(int index2 = index1 + 1; index2 < i ; index2++){
+				barcode1 = BarangSorted[selected].barcode;
+				barcode1 = barcode1.substr(2,7);
+				stringstream toint1(barcode1);
+				toint1 >> temp1;
+				barcode2 = BarangSorted[index2].barcode;
+				barcode2 = barcode2.substr(2,7);
+				stringstream toint2(barcode2);
+				toint2 >> temp2;
+				if(temp1 > temp2)
+					selected = index2;
+				cout << "ini temp1 : " << temp1 << endl;
+				cout << "ini temp2 : " << temp2 << endl;
+				cout << "ini index2 : " << index2 << endl;
+				detailbarang[1].barcode = BarangSorted[selected].barcode;
+				detailbarang[1].nama = BarangSorted[selected].nama;
+				detailbarang[1].hargabeli = BarangSorted[selected].hargabeli;
+				detailbarang[1].hargajual = BarangSorted[selected].hargajual;
+				detailbarang[1].stok = BarangSorted[selected].stok;
+				
+				while(selected > index1){
+					BarangSorted[selected].barcode = BarangSorted[selected-1].barcode;
+					BarangSorted[selected].nama = BarangSorted[selected-1].nama;
+					BarangSorted[selected].hargabeli = BarangSorted[selected-1].hargabeli;
+					BarangSorted[selected].hargajual = BarangSorted[selected-1].hargajual;
+					BarangSorted[selected].stok = BarangSorted[selected-1].stok;
+					selected--;
+				}
+				BarangSorted[index1].barcode = detailbarang[1].barcode;
+				BarangSorted[index1].nama = detailbarang[1].nama;
+				BarangSorted[index1].hargabeli= detailbarang[1].hargabeli;
+				BarangSorted[index1].hargajual = detailbarang[1].hargajual;
+				BarangSorted[index1].stok = detailbarang[1].stok;
+			}
+		}
+		
+		ofstream ofs;
+		ofs.open("temp.txt",ios::out);
+			if(ofs){
+				int z = 0;
+				i--;
+				while(i >=0 ){
+					ofs << endl
+					<< BarangSorted[z].barcode << ' '
+					<< left << setw(25) << BarangSorted[z].nama
+					<< right << setw(15) << BarangSorted[z].hargabeli
+					<< setw(15) << BarangSorted[z].hargajual
+					<< setw(10) << BarangSorted[z].stok;
+					i--;
+					z++;
+				}
+				
+			}
+		ofs.close();
+	
+	ifs.close();
+	remove("databarang.txt");  // remove the original file 
+    rename("temp.txt", "databarang.txt");  // rename the file 
+  
+    
+	cout << endl;
+    }
+	
+	system("pause");
+}
+
+
 void showdatabarang(){
 	cout << detailbarang[1].barcode << ' '
 	 << left << setw(25) << detailbarang[1].nama
@@ -319,15 +439,15 @@ void inputbarang(bool *ULANG, int *y,bool BARU){
 				}
 			else
 				BarcodeTerakhir = detailbarang[1].barcode;
-					
-				//cout << BarcodeTerakhir;
+				cout << "\nBarcode Terakhir : \n";
+				cout << BarcodeTerakhir;
 			BarcodeTerakhir = BarcodeTerakhir.substr(2,7);
-			stringstream tostring(BarcodeTerakhir);
-			tostring >> BarcodeInt;
+			stringstream toint(BarcodeTerakhir);
+			toint >> BarcodeInt;
 			BarcodeInt = BarcodeInt + 1;
-			stringstream toint;
-			toint << BarcodeInt;
-			detailbarang[0].barcode = "SA" + toint.str();
+			stringstream tostring;
+			tostring << BarcodeInt;
+			detailbarang[0].barcode = "SA" + tostring.str();
 		}
 				ifs.close();
 	
@@ -348,7 +468,6 @@ void inputbarang(bool *ULANG, int *y,bool BARU){
 		cout << "\nData Berhasil diinput\n";
 		*ULANG = false;
 		cout << endl;
-		system("pause");
 		ofs.close();
 	}
 	else{
@@ -405,6 +524,7 @@ do{
 		y = 10;
 		inputbarang(&ULANG, &y,true);
 }while(ULANG);
+	
 }
 
 void editbarang(){
@@ -446,6 +566,7 @@ void editbarang(){
 			cout << "\nData Sebelumnya berhasil diubah";
 		}
 	}
+	sortbarcode();
 	cout << endl;
 	system("pause");
 }
@@ -484,9 +605,11 @@ void deletebarang(){
 		do{
 			cout << " ? (y/n) : ";
 			cin >> agreement;
-			if(agreement == 'y' || agreement == 'Y')
+			if(agreement == 'y' || agreement == 'Y'){
 				delete_line("databarang.txt",line);
-
+				sortbarcode();
+				cout << "\nDATA BERHASIL DIHAPUS\n";
+			}
 		}while(agreement != 'n' && agreement != 'N' && agreement != 'y' && agreement != 'Y');
 		do{
 			cout << "\nUlang ? (y/n) : ";
@@ -566,7 +689,7 @@ void exit(){
 main(){
 	int LOGIN_ACCESS = 0; //0 = admin, 1 = cashier 
 	int LAYERMENU = 1; //semakin tinggi angkanya, semakin dalam lapisannya.
-	bool BACKVALIDATION = false;
+	bool BACKVALIDATION = true;
 do{
 	system("cls");
 
@@ -997,5 +1120,6 @@ cout << setw(4) << ' ' << "        \\/     \\/          \\/          \\/        
 		}while(!BACKVALIDATION || LAYERMENU == 2);
 	}
 cin.ignore();
+
 }while(BACKVALIDATION == true);
 }

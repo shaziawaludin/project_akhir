@@ -1,8 +1,5 @@
 
-SA1000005 oh_oke                                 1              3         4
-SA1000006 okeeeeee                               1              3         4
-SA1000007 apaini1                                2              3         4
-SA1000008 ls                                     2              3         4
-SA1000009 x                                      0              0         0
-SA1000011 1                                      2              3         4
-SA1000012 udin                                 120              1         2
+SA1000001 inipertama                             1              1         1
+SA1000002 inikedua                               2              2         2
+SA1000004 inikeempat                             4              4         4
+SA1000005 inikelima                              5              5         5
