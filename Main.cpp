@@ -451,23 +451,53 @@ void editbarang(){
 }
 
 void deletebarang(){
-	
 	cout << setfill(' ');
 	//bool ulang = true;
-
+	int line = 0;
+	bool found = false;
+	char agreement;
+	do{
 		system("cls");
-	cout << setw(4) << ' ' << "______     _      _        ______                             \n";
-	cout << setw(4) << ' ' << "|  _  \\   | |    | |       | ___ \\                            \n";
-	cout << setw(4) << ' ' << "| | | |___| | ___| |_ ___  | |_/ / __ _ _ __ __ _ _ __   __ _ \n";
-	cout << setw(4) << ' ' << "| | | / _ \\ |/ _ \\ __/ _ \\ | ___ \\/ _` | '__/ _` | '_ \\ / _` |\n";
-	cout << setw(4) << ' ' << "| |/ /  __/ |  __/ ||  __/ | |_/ / (_| | | | (_| | | | | (_| |\n";
-	cout << setw(4) << ' ' << "|___/ \\___|_|\\___|\\__\\___| \\____/ \\__,_|_|  \\__,_|_| |_|\\__, |\n";
-	cout << setw(4) << ' ' << "                                                         __/ |\n";
-	cout << setw(4) << ' ' << "                                                        |___/ \n";
-	cout << setfill('=') << setw(120) << ' ' << endl;
-	cout << setfill(' ');
-	cout << endl;
-	//pilihcaribarang();
+		cout << setw(4) << ' ' << "______     _      _        ______                             \n";
+		cout << setw(4) << ' ' << "|  _  \\   | |    | |       | ___ \\                            \n";
+		cout << setw(4) << ' ' << "| | | |___| | ___| |_ ___  | |_/ / __ _ _ __ __ _ _ __   __ _ \n";
+		cout << setw(4) << ' ' << "| | | / _ \\ |/ _ \\ __/ _ \\ | ___ \\/ _` | '__/ _` | '_ \\ / _` |\n";
+		cout << setw(4) << ' ' << "| |/ /  __/ |  __/ ||  __/ | |_/ / (_| | | | (_| | | | | (_| |\n";
+		cout << setw(4) << ' ' << "|___/ \\___|_|\\___|\\__\\___| \\____/ \\__,_|_|  \\__,_|_| |_|\\__, |\n";
+		cout << setw(4) << ' ' << "                                                         __/ |\n";
+		cout << setw(4) << ' ' << "                                                        |___/ \n";
+		cout << setfill('=') << setw(120) << ' ' << endl;
+		cout << setfill(' ');
+		cout << endl << endl;
+		cout << setw(6) << ' ' << "Barcode : ";
+		cin >> detailbarang[0].barcode;
+		caribarang_barcode(&line,&found);
+		if(found){
+		cout << "\nHapus Barang : \n";
+		cout << "Barcode" << setw(3) << ' ' 
+			 << "Nama Barang" << setw(19) <<' ' 
+			 << "Harga Beli" << setw(5) << ' ' 
+			 << "Harga Jual" << setw(4) << ' ' 
+			 << "Jumlah" << endl;
+		showdatabarang();
+		cout << endl;
+		do{
+			cout << " ? (y/n) : ";
+			cin >> agreement;
+			if(agreement == 'y' || agreement == 'Y')
+				delete_line("databarang.txt",line);
+
+		}while(agreement != 'n' && agreement != 'N' && agreement != 'y' && agreement != 'Y');
+		do{
+			cout << "\nUlang ? (y/n) : ";
+			cin >> agreement;
+		}while(agreement != 'n' && agreement != 'N' && agreement != 'y' && agreement != 'Y');
+		}
+		else 
+			cout << "Barang tidak ada";
+			cout << endl;
+			system("pause");
+	}while(agreement == 'y' ||agreement == 'Y');
 }
 void logo(){
 	int matrix[33][32]={
@@ -659,7 +689,7 @@ cout << setw(4) << ' ' << "               \\/     \\/\\______|          \\/     
 						}
 						 
 						case'4':{
-							cout << endl;
+							/*cout << endl;
 							cout << setfill('=') << setw(120) << ' ' << endl;
 							cout << setfill(' ');
 							cout << endl;
@@ -669,8 +699,43 @@ cout << setw(4) << ' ' << "               \\/     \\/\\______|          \\/     
 								 << "Harga Beli" << setw(7) << ' '
 								 << "Harga Jual" << setw(7) << ' '
 								 << "Stok" << setw(4) << ' '
-								 << "Discount" << endl;
-						break;
+								 << "Discount" << endl;*/
+								 
+							cout << "\n\nData Barang : \n";
+							
+							ifstream ifs;
+							ifs.open("databarang.txt");
+							if(ifs){
+								cout << setfill('=') << setw(90) << " \n";
+								cout << setfill(' ');
+								cout << "Barcode" << setw(3) << ' ' 
+									 << "Nama Barang" << setw(19) <<' ' 
+									 << "Harga Beli" << setw(5) << ' ' 
+									 << "Harga Jual" << setw(4) << ' ' 
+									 << "Jumlah" << endl;
+								cout << setfill('=') << setw(90) << " \n";
+								cout << setfill(' ');
+								while(!ifs.eof()){
+									ifs >> detailbarang[1].barcode >> 
+									detailbarang[1].nama >> 
+									detailbarang[1].hargabeli >> 
+									detailbarang[1].hargajual >>
+									detailbarang[1].stok;
+									showdatabarang();
+									cout << endl;
+								}
+								cout << setfill('=') << setw(90) << " \n";
+								cout << setfill(' ');
+							}
+							else{
+							 cout << "\nFile Tidak Dapa Dibuka"
+								  << "\nAtau FIle Tidak Ada";
+							  }
+							ifs.close();
+							
+							cout << endl;
+							system("pause");
+							break;
 						}
 						
 						case'9':{
