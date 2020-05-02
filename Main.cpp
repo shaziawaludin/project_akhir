@@ -147,9 +147,17 @@ void modify(){
 void login(int *LOGIN_ACCESS){
 	string userinput;
 	string validation;
-	
+	//ini untuk pertama kali aplikasi dibuka
+	string initialpass = "admin#theworldinmyhand";
 	bool found = false;
 	int line = 0;
+	found = search_acc("pass.txt",initialpass);
+	if(!found){
+		cout << "\n\t\t\t\t" << "BACALAH README.txt PADA PAKET APLIKASI\n";
+		system("pause");
+		system("cls");
+	}
+		
 	do{
 		validation.clear();
 	system("color F0");
@@ -166,7 +174,20 @@ void login(int *LOGIN_ACCESS){
 	getline(cin,userinput);
 	validation += userinput;
 	
-	
+	found = search_acc("pass.txt",validation);
+	//untuk pertama kali digunakan
+	//user akan otomatis membuat sebuah file dengan initial password
+	if(!found && validation == initialpass){
+		ofstream ofs;
+		ofs.open("pass.txt",ios::out);
+		ofs << "Username # Password\n";
+		ofs << initialpass;
+		ofs.close();
+	}
+	//jika user sudah pernah membuka aplikasi,
+	//seharusnya Ia sudah punya sebuah account superadmin
+	//sisanya Ia dapat menambahkan sendiri
+	if(!found)
 	found = search_acc("pass.txt",validation);
 	line = search_line("pass.txt",validation);
 	if(!found){
@@ -175,6 +196,8 @@ void login(int *LOGIN_ACCESS){
 		system("pause");
 		system("cls");
 	}
+	
+	
 	}while(!found);
 	
 	if(found && line == 1)
@@ -731,9 +754,22 @@ void exit(){
 	cin >> Excheck;
 	}while(Excheck != 'n' && Excheck != 'n' &&
 	Excheck != 'y' && Excheck != 'Y');
-	if(Excheck == 'y' || Excheck == 'Y')
+	if(Excheck == 'y' || Excheck == 'Y'){
+		system("cls");
+
+cout << "                    _.---._     .---. \n";
+cout << "            __...---' .---. `---'-.   `.\n";
+cout << "        .-''__.--' _.'( | )`.  `.  `._ :\n";
+cout << "      .'__-'_ .--'' ._`---'_.-.  `.   `-`.\n";
+cout << "             ~ -._ -._``---. -.    `-._   `.\n";
+cout << "                  ~ -.._ _ _ _ ..-_ `.  `-._``--.._\n";
+cout << "                               -~ -._  `-.  -. `-._``--.._.--''. \n";
+cout << "                                    ~ ~-.__     -._  `-.__   `. `. \n";
+cout << "                                      SA~ ~~ ~---...__ _    ._ .` `. \n";
+cout << "                                                      ~  ~--.....--~ \n";
+Sleep(100);
 		exit(1);
-	
+	}
 	system("cls");
 }
 
@@ -883,6 +919,7 @@ do{
 							totalbayar -= (detailt[0].dibeli[banyakbarang].hargajual*qty);
 							
 						}
+						
 					}
 				else{
 					do{
@@ -938,7 +975,26 @@ do{
 				}
 			ofs.close();
 			
-			
+			for(int j = 0; j < banyakbarang; j++){
+				line = 0;
+				found = false;
+				detailbarang[0].barcode = detailt[0].dibeli[j].barcode;
+				caribarang_barcode(&line, &found);	
+				detailbarang[1].stok = detailbarang[1].stok - 
+									   detailt[0].dibeli[j].qty;
+				ofstream ofs;
+				ofs.open("databarang.txt",ios::app);
+				ofs	<< endl
+					<< detailbarang[1].barcode << ' '
+					<< left << setw(25) << detailbarang[1].nama
+					<< right << setw(15) << detailbarang[1].hargabeli
+					<< setw(15) << detailbarang[1].hargajual
+					<< setw(10) << detailbarang[1].stok;
+					
+				ofs.close();
+				delete_line("databarang.txt",line);
+				sortbarcode();
+			}
 			cout << "\n\nTERIMAKASIH! TRANSAKSI SUKSES";
 		}
 		else{
@@ -997,8 +1053,8 @@ do{
 
 	login(&LOGIN_ACCESS);
 	system("color 0a");
-	//logo();
-
+	logo();
+	
 	char MENU = 0;
 	///main menu//
 
