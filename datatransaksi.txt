@@ -1,0 +1,3 @@
+
+HA1000001 SA1000001 inimasihpertama 1 1 1 1 *
+HA1000002 SA1000001 inimasihpertama 1 1 10 10 *

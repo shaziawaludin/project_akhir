@@ -13,11 +13,21 @@ struct barang{
 	long int hargabeli, hargajual, discount;
 	int stok;
 	string barcode;
+	int qty;
 };
 
+struct transaksi{
+	string c_invoice;
+	
+	long int totalbayar;
+	barang dibeli[300];
+	
+};
 barang detailbarang[2];
 barang BarangSorted[1000];
 string sortingtemp[1000];
+transaksi detailt[2];
+transaksi transaksitemp[10000];
 
 void gotoxy ( short x, short y )
 {
@@ -243,23 +253,15 @@ void sortbarcode(){
 	string barcode1,barcode2;
 	if(ifs){
 		while(ifs.peek() != EOF){
-			ifs >> detailbarang[1].barcode >> 
-				detailbarang[1].nama >> 
-				detailbarang[1].hargabeli >> 
-				detailbarang[1].hargajual >>
-				detailbarang[1].stok;
-				
-				BarangSorted[i].barcode = detailbarang[1].barcode;
-				BarangSorted[i].nama = detailbarang[1].nama;
-				BarangSorted[i].hargabeli = detailbarang[1].hargabeli;
-				BarangSorted[i].hargajual = detailbarang[1].hargajual;
-				BarangSorted[i].stok = detailbarang[1].stok;
-				
+				ifs >> BarangSorted[i].barcode >>
+				BarangSorted[i].nama>>
+				BarangSorted[i].hargabeli>>
+				BarangSorted[i].hargajual>>
+				BarangSorted[i].stok;
 			barcode1 = BarangSorted[i].barcode;
 			barcode1 = barcode1.substr(2,7);
 			sortingtemp[i] = barcode1;
 			i++;
-			cout << "ini i: " << i;
 		}
 		
 		for(int index1 = 0; index1 < i-1; index1++){
@@ -275,9 +277,6 @@ void sortbarcode(){
 				toint2 >> temp2;
 				if(temp1 > temp2)
 					selected = index2;
-				cout << "ini temp1 : " << temp1 << endl;
-				cout << "ini temp2 : " << temp2 << endl;
-				cout << "ini index2 : " << index2 << endl;
 				detailbarang[1].barcode = BarangSorted[selected].barcode;
 				detailbarang[1].nama = BarangSorted[selected].nama;
 				detailbarang[1].hargabeli = BarangSorted[selected].hargabeli;
@@ -299,7 +298,6 @@ void sortbarcode(){
 				BarangSorted[index1].stok = detailbarang[1].stok;
 			}
 		}
-		
 		ofstream ofs;
 		ofs.open("temp.txt",ios::out);
 			if(ofs){
@@ -322,12 +320,8 @@ void sortbarcode(){
 	ifs.close();
 	remove("databarang.txt");  // remove the original file 
     rename("temp.txt", "databarang.txt");  // rename the file 
-  
-    
-	cout << endl;
     }
 	
-	system("pause");
 }
 
 
@@ -685,9 +679,232 @@ void exit(){
 	system("cls");
 }
 
+int carilineinvoice(){
+	char c;
+	int akhir=0;
+	ifstream ifs;
+	ifs.open("datatransaksi.txt");
+	while(ifs.get(c)){
+		if(c == '*')
+			akhir++;
+	}
+	ifs.close();
+	return(akhir);
+}
+
+void buatcinvoice(){
+	int akhir, invoiceInt;
+	akhir = carilineinvoice();
+	string invoiceterakhir;
+	//untuk membuat file pertama kali
+	ofstream ofs;
+	ofs.open("datatransaksi.txt",ios::app);
+	ofs.close();
+	//untuk membuat file pertama kali
+	
+	ifstream fs;
+	fs.open("datatransaksi.txt",ios::in);
+	int i=0;
+	int j=0;
+	char c;
+	fs.seekg(0,ios::beg);
+	while(!fs.eof() && i < akhir){
+		int indeks = i;
+		if(indeks == i){
+			fs >> transaksitemp[indeks].c_invoice;
+			indeks++;
+		do{
+		fs >> transaksitemp[i].dibeli[j].barcode 
+		>> transaksitemp[i].dibeli[j].nama  
+		>> transaksitemp[i].dibeli[j].hargabeli
+		>> transaksitemp[i].dibeli[j].hargajual 
+		>> transaksitemp[i].dibeli[j].qty 
+		>> transaksitemp[i].totalbayar >> c;
+		j++;
+		}while(c == '#');
+	}
+		i++; 
+	}
+	if(i == 0)
+		invoiceterakhir = "HA1000000";
+	else
+		invoiceterakhir = transaksitemp[i-1].c_invoice;
+		
+		invoiceterakhir = invoiceterakhir.substr(2,7);
+		stringstream toint(invoiceterakhir);
+		toint >> invoiceInt;
+		invoiceInt = invoiceInt + 1;
+		stringstream tostring;
+		tostring << invoiceInt;
+		detailt[0].c_invoice = "HA" + tostring.str();
+	fs.close();
+}
+
+void kasir(){
+int line = 0,qty = 0, discount =0;
+bool found = false , update = false;
+
+string tambah;
+char lanjut;
+int banyakbarang = 0,updateint = 0;
+long int bayar,kembali;
+buatcinvoice();
+detailt[0].totalbayar = 0;
+do{
+	do{
+		do{
+			if(update)
+				updateint = 1;
+			if(updateint == 1)
+				update = false;
+			system("cls");
+			cout << "\t __  __     ______     ______     __     ______    \n";
+			cout << "\t/\\ \\/ /    /\\  __ \\   /\\  ___\\   /\\ \\   /\\  == \\\n";   
+			cout << "\t\\ \\  _\"-.  \\ \\  __ \\  \\ \\___  \\  \\ \\ \\  \\ \\  __< \n";  
+			cout << "\t \\ \\_\\ \\_\\  \\ \\_\\ \\_\\  \\/\\_____\\  \\ \\_\\  \\ \\_\\ \\_\\ \n";
+			cout << "\t  \\/_/\\/_/   \\/_/\\/_/   \\/_____/   \\/_/   \\/_/ /_/\n";
+			cout << "\n\n";
+			cout << "  No.Invoice : " << detailt[0].c_invoice<< endl;
+			cout << "  Total Harus Bayar : Rp. " << detailt[0].totalbayar << endl;
+			cout << setfill('=') << setw(120) << ' ' << endl;
+			cout << setfill(' ');
+			cout << endl;
+
+
+			cout << " Barang Dibeli : " << endl;
+			cout << "  Kode barang" << setw(5) << ' ' 
+				 << "Nama Barang" <<  setw(11) << ' ' 
+				 << "Harga Satuan" << setw(10) << ' ' 
+				 << "Qty" << setw(5) << ' ' 
+				 << "%Disc" << setw(11) << ' '
+				 << "Rp. Disc" << setw(10) << ' ' 
+				 << "Total"
+				 << endl;
+			for(int j =0; j <= banyakbarang-1; j++){
+				cout << "  "
+					<< detailt[0].dibeli[j].barcode << setw(7) << ' '
+					<< setw(19) << left << detailt[0].dibeli[j].nama
+					<< setw(15) << right << detailt[0].dibeli[j].hargajual
+					<< setw(12) << detailt[0].dibeli[j].qty
+					<< setw(10) << 0
+					<< setw(20) << 0
+					<< setw(15) << (detailt[0].dibeli[j].hargajual * detailt[0].dibeli[j].qty)
+					<< endl;
+			}
+			cout << endl;
+			cout << setfill('=') << setw(120) << ' ' << endl;
+			cout << setfill(' ');
+			if(updateint != 1){
+				cout << "\n\tBarcode\t\t: ";
+				cin >> detailbarang[0].barcode;
+				caribarang_barcode(&line, &found);
+				cout << "\n\tBarcode" << setw(3) << ' ' 
+					 << "Nama Barang" << setw(19) <<' ' 
+					 << "Harga Beli" << setw(5) << ' ' 
+					 << "Harga Jual" << setw(4) << ' ' 
+					 << "Jumlah";
+				cout << "\n\t";
+				cout << setfill('-') << setw(81) << ' ';
+				cout << setfill(' ');
+				cout << "\n\t";
+				if(found){
+					showdatabarang();
+					cout << "\n\n\tQty \t\t: ";
+					cin >> qty;
+				}
+				else
+					cout << "Barang Tidak ada";
+
+			cout << "\n\n";
+			//cout << "\n\tDiscount\t: ";
+				if(found){
+					do{
+						cout << "\tTambah >    Hapus <    Selesai >>\n";
+						cout << "\t";
+						cin >> tambah;
+					}while(tambah != ">" && tambah != "<" && tambah != ">>");
+							detailt[0].dibeli[banyakbarang].barcode = detailbarang[1].barcode;
+							detailt[0].dibeli[banyakbarang].nama = detailbarang[1].nama;
+							detailt[0].dibeli[banyakbarang].hargabeli = detailbarang[1].hargabeli;
+							detailt[0].dibeli[banyakbarang].hargajual = detailbarang[1].hargajual;
+							detailt[0].dibeli[banyakbarang].stok = detailbarang[1].stok;
+							detailt[0].dibeli[banyakbarang].qty = qty;
+							detailt[0].totalbayar += (detailt[0].dibeli[banyakbarang].hargajual*qty);
+							banyakbarang++;
+							
+						if(tambah == "<"){
+							banyakbarang--;
+							detailt[0].totalbayar -= (detailt[0].dibeli[banyakbarang].hargajual*qty);
+							
+						}
+					}
+				else{
+					do{
+					cout << "\tUlang <    Selesai >>\n";
+						cout << "\t";
+						cin >> tambah;
+					}while(tambah != "<" && tambah != ">>");
+					
+				}
+				
+				if(tambah == ">>") 
+					update = true;
+					else update = false;
+			}
+		}while(updateint == 0);
+		updateint = 0;
+	}while(tambah == ">" || tambah == "<");
+do{
+	cout << "\n\t< Batal     > Lanjut bayar";
+	cout << "\n\t";
+	cin >> lanjut;
+}while(lanjut != '<' && lanjut != '>');
+	
+	if(lanjut =='<'){
+		banyakbarang = 0;
+		detailt[0].totalbayar = 0;
+	}
+
+}while(lanjut == '<');
+	
+	if(lanjut == '>' && (found || banyakbarang > 0)){
+		cout << "\n\tBAYAR \t: Rp. ";
+		cin >> bayar;
+		kembali = bayar - detailt[0].totalbayar;
+		if(kembali >=0){
+			cout << "\n\tKEMBALI\t: Rp. " << kembali;
+			
+			ofstream ofs;
+			ofs.open("datatransaksi.txt",ios::app);
+				ofs << endl 
+					<< detailt[0].c_invoice << ' ';
+				
+				for(int j = 0; j < banyakbarang; j++){
+				ofs << detailt[0].dibeli[j].barcode << ' '
+					<< detailt[0].dibeli[j].nama << ' '
+					<< detailt[0].dibeli[j].hargabeli << ' '
+					<< detailt[0].dibeli[j].hargajual << ' '
+					<< detailt[0].dibeli[j].qty << ' '
+					<< detailt[0].totalbayar <<' ';
+					if(j == banyakbarang-1)
+						ofs << '*';
+					else 
+						ofs << '#'<< ' ';
+				}
+			ofs.close();
+			
+			
+			cout << "\n\nTERIMAKASIH! TRANSAKSI SUKSES";
+		}
+		else{
+			cout << "\nTRANSAKSI GAGAL! UANG TIDAK MENCUKUPI";
+		}
+	}
+		
+}
 
 main(){
-	int LOGIN_ACCESS = 0; //0 = admin, 1 = cashier 
+	int LOGIN_ACCESS = 1; //0 = admin, 1 = cashier 
 	int LAYERMENU = 1; //semakin tinggi angkanya, semakin dalam lapisannya.
 	bool BACKVALIDATION = true;
 do{
@@ -812,18 +1029,6 @@ cout << setw(4) << ' ' << "               \\/     \\/\\______|          \\/     
 						}
 						 
 						case'4':{
-							/*cout << endl;
-							cout << setfill('=') << setw(120) << ' ' << endl;
-							cout << setfill(' ');
-							cout << endl;
-							cout << setw(8) << ' ' 
-								 << "Barcode" << setw(3) << ' ' 
-								 << "Nama Barang" << setw(10) << ' '
-								 << "Harga Beli" << setw(7) << ' '
-								 << "Harga Jual" << setw(7) << ' '
-								 << "Stok" << setw(4) << ' '
-								 << "Discount" << endl;*/
-								 
 							cout << "\n\nData Barang : \n";
 							
 							ifstream ifs;
@@ -1056,48 +1261,8 @@ cout << setw(4) << ' ' << "        \\/     \\/          \\/          \\/        
 			switch(MENU){
 				case('1'):{
 					system("cls");
+					kasir();
 					
-					cout << "\t __  __     ______     ______     __     ______    \n";
-					cout << "\t/\\ \\/ /    /\\  __ \\   /\\  ___\\   /\\ \\   /\\  == \\\n";   
-					cout << "\t\\ \\  _\"-.  \\ \\  __ \\  \\ \\___  \\  \\ \\ \\  \\ \\  __< \n";  
-					cout << "\t \\ \\_\\ \\_\\  \\ \\_\\ \\_\\  \\/\\_____\\  \\ \\_\\  \\ \\_\\ \\_\\ \n";
-					cout << "\t  \\/_/\\/_/   \\/_/\\/_/   \\/_____/   \\/_/   \\/_/ /_/\n";
-					cout << "\n\n";
-					cout << "  No.Invoice : " << endl;
-					cout << "  Total Harus Bayar : " << endl;
-					cout << setfill('=') << setw(120) << ' ' << endl;
-					cout << setfill(' ');
-					cout << "\n\tBarcode\t\t: ";
-					
-					cout << "\n\tNama Produk\t: ";
-					cout << "\n\tHarga satuan\t: ";
-					cout << "\n\tStok\t\t: ";
-					
-					cout << "\n\tQty \t\t: ";
-					cout << "\n\tDiscount\t: ";
-					cout << "\n\n\t\tTambah >    Hapus <    Selesai >>";
-					
-					cout << "\n\t\tBarcode : ";
-					
-					
-					
-					cout << endl;
-					cout << setfill('=') << setw(120) << ' ' << endl;
-					cout << setfill(' ');
-					
-					cout << " Barang Dibeli : " << endl;
-					cout << "  Kode barang" << setw(5) << ' ' 
-						 << "Nama Barang" <<  setw(10) << ' ' 
-						 << "Harga Satuan" << setw(10) << ' ' 
-						 << "Qty" << setw(5) << ' ' 
-						 << "%Disc" << setw(10) << ' '
-						 << "Rp. Disc" << setw(10) << ' ' 
-						 << "Total"
-						 << endl;
-					
-					cout << "\n\tBayar \t: Rp. ";
-					cout << "\n\tKembali\t: Rp. ";
-					cout << "\n\tX Batal     > Lanjut";
 					cout << endl;
 					system("pause");
 				break;

@@ -1,5 +1,7 @@
 
-SA1000001 inipertama                             1              1         1
+SA1000001 inimasihpertama                        1              1         1
 SA1000002 inikedua                               2              2         2
 SA1000004 inikeempat                             4              4         4
 SA1000005 inikelima                              5              5         5
+SA1000006 inikeenam                              6              6         6
+SA1000007 inia                                   1              2         3
