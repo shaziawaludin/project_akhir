@@ -18,8 +18,6 @@ struct barang{
 
 struct transaksi{
 	string c_invoice;
-	
-	long int totalbayar;
 	barang dibeli[300];
 	
 };
@@ -187,6 +185,18 @@ void login(int *LOGIN_ACCESS){
 	system("cls");
 }
 
+int carilineinvoice(){
+	char c;
+	int akhir=0;
+	ifstream ifs;
+	ifs.open("datatransaksi.txt");
+	while(ifs.get(c)){
+		if(c == '*')
+			akhir++;
+	}
+	ifs.close();
+	return(akhir);
+}
 
 void detailtransaksi(){
 	cout << setfill(' ');
@@ -196,30 +206,78 @@ void detailtransaksi(){
 	cout << setw(4) << ' ' << " |    `   \\  ___/|  |  / __ \\|  |  |__   |    |   |  | \\// __ \\|   |  \\\\___ \\  / __ \\|    <  \\___ \\|  |\n";
 	cout << setw(4) << ' ' << "/_______  /\\___  >__| (____  /__|____/   |____|   |__|  (____  /___|  /____  >(____  /__|_ \\/____  >__|\n";
 	cout << setw(4) << ' ' << "        \\/     \\/          \\/                                \\/     \\/     \\/      \\/     \\/     \\/    \n";
-	
 	cout << setfill('=') << setw(120) << ' ' << endl;
 	cout << setfill(' ');
-	cout << "No Invoice : "<< endl;
-	cout << "  Kode barang" << setw(5) << ' ' 
-		 << "Nama Barang" <<  setw(10) << ' ' 
-		 << "Harga Satuan" << setw(10) << ' ' 
-		 << "Qty" << setw(5) << ' ' 
-		 << "%Disc" << setw(10) << ' '
-		 << "Rp. Disc" << setw(10) << ' ' 
-		 << "Total"
-		 << endl;
-	cout << "\nTotal belanja : Rp. " << endl;
-	/*cout << "  Kode barang" << setw(5) << ' ' 
-		 << "Nama Barang" <<  setw(10) << ' ' 
-		 << "Harga Satuan" << setw(10) << ' ' 
-		 << "Qty" << setw(5) << ' ' 
-		 << "%Disc" << setw(10) << ' '
-		 << "Rp. Disc" << setw(10) << ' ' 
-		 << "Total"
-		 << endl;
-	* */ // isi dengan data dari dalam file.
+	cout << endl;
+	int akhir;
+	akhir = carilineinvoice();
+	ifstream fs;
+	fs.open("datatransaksi.txt",ios::in);
+	if(fs){
+		int totalbayar=0;
+		int i=0;
+		int j=0;
+		char c;
+		fs.seekg(0,ios::beg);
+		while(!fs.eof() && i < akhir){
+			int indeks = i;
+			if(indeks == i){
+				fs >> transaksitemp[1].c_invoice;
+				indeks++;
+				cout << "No Invoice : "<< transaksitemp[1].c_invoice << endl;
+			totalbayar = 0;
+			cout << "  Kode barang" << setw(5) << ' ' 
+			 << "Nama Barang" <<  setw(10) << ' ' 
+			 << "Harga Satuan" << setw(10) << ' ' 
+			 << "Qty" << setw(5) << ' ' 
+			 << "%Disc" << setw(10) << ' '
+			 << "Rp. Disc" << setw(10) << ' ' 
+			 << "Total"
+			 << endl;
+			 
+			do{
+			fs >> transaksitemp[1].dibeli[j].barcode 
+			>> transaksitemp[1].dibeli[j].nama  
+			>> transaksitemp[1].dibeli[j].hargabeli
+			>> transaksitemp[1].dibeli[j].hargajual 
+			>> transaksitemp[1].dibeli[j].qty 
+			>> c;
+			j++;
+			totalbayar += transaksitemp[1].dibeli[j-1].qty * 
+				  transaksitemp[1].dibeli[j-1].hargajual;
+				  
+			 cout << "  " << transaksitemp[1].dibeli[j-1].barcode << setw(7) << ' '
+				  << setw(20) << left << transaksitemp[1].dibeli[j-1].nama 
+				  << setw(13) << right << transaksitemp[1].dibeli[j-1].hargajual
+				  << setw(13) << transaksitemp[1].dibeli[j-1].qty
+				  << setw(10) << 0
+				  << setw(18) << 0
+				  << setw(15) << transaksitemp[1].dibeli[j-1].qty * 
+				  transaksitemp[1].dibeli[j-1].hargajual;
+			
+			
+			cout << endl;
+			}while(c == '#');
+		}
+		cout << "\n\nTotal bayar \t: " 
+				 << totalbayar << endl; 		
+			cout << setfill('=') 
+				 << setw(30) << ' ';
+			cout << setfill(' ');
+		cout << "\n\n";;
+			i++; 
+		}
+		i = 10, j=10;
+			
+		fs.close();
+	
+	}
+	else
+		cout << "\nData belum ada!";
+		
 	cout << endl;
 	system("pause");
+	
 }
 
 void selection(int arr[], int banyak){
@@ -679,18 +737,7 @@ void exit(){
 	system("cls");
 }
 
-int carilineinvoice(){
-	char c;
-	int akhir=0;
-	ifstream ifs;
-	ifs.open("datatransaksi.txt");
-	while(ifs.get(c)){
-		if(c == '*')
-			akhir++;
-	}
-	ifs.close();
-	return(akhir);
-}
+
 
 void buatcinvoice(){
 	int akhir, invoiceInt;
@@ -719,7 +766,7 @@ void buatcinvoice(){
 		>> transaksitemp[i].dibeli[j].hargabeli
 		>> transaksitemp[i].dibeli[j].hargajual 
 		>> transaksitemp[i].dibeli[j].qty 
-		>> transaksitemp[i].totalbayar >> c;
+		>> c;
 		j++;
 		}while(c == '#');
 	}
@@ -747,9 +794,8 @@ bool found = false , update = false;
 string tambah;
 char lanjut;
 int banyakbarang = 0,updateint = 0;
-long int bayar,kembali;
+long int bayar,kembali,totalbayar=0;
 buatcinvoice();
-detailt[0].totalbayar = 0;
 do{
 	do{
 		do{
@@ -765,7 +811,7 @@ do{
 			cout << "\t  \\/_/\\/_/   \\/_/\\/_/   \\/_____/   \\/_/   \\/_/ /_/\n";
 			cout << "\n\n";
 			cout << "  No.Invoice : " << detailt[0].c_invoice<< endl;
-			cout << "  Total Harus Bayar : Rp. " << detailt[0].totalbayar << endl;
+			cout << "  Total Harus Bayar : Rp. " << totalbayar << endl;
 			cout << setfill('=') << setw(120) << ' ' << endl;
 			cout << setfill(' ');
 			cout << endl;
@@ -829,12 +875,12 @@ do{
 							detailt[0].dibeli[banyakbarang].hargajual = detailbarang[1].hargajual;
 							detailt[0].dibeli[banyakbarang].stok = detailbarang[1].stok;
 							detailt[0].dibeli[banyakbarang].qty = qty;
-							detailt[0].totalbayar += (detailt[0].dibeli[banyakbarang].hargajual*qty);
+							totalbayar += (detailt[0].dibeli[banyakbarang].hargajual*qty);
 							banyakbarang++;
 							
 						if(tambah == "<"){
 							banyakbarang--;
-							detailt[0].totalbayar -= (detailt[0].dibeli[banyakbarang].hargajual*qty);
+							totalbayar -= (detailt[0].dibeli[banyakbarang].hargajual*qty);
 							
 						}
 					}
@@ -862,7 +908,7 @@ do{
 	
 	if(lanjut =='<'){
 		banyakbarang = 0;
-		detailt[0].totalbayar = 0;
+		totalbayar = 0;
 	}
 
 }while(lanjut == '<');
@@ -870,7 +916,7 @@ do{
 	if(lanjut == '>' && (found || banyakbarang > 0)){
 		cout << "\n\tBAYAR \t: Rp. ";
 		cin >> bayar;
-		kembali = bayar - detailt[0].totalbayar;
+		kembali = bayar - totalbayar;
 		if(kembali >=0){
 			cout << "\n\tKEMBALI\t: Rp. " << kembali;
 			
@@ -884,8 +930,7 @@ do{
 					<< detailt[0].dibeli[j].nama << ' '
 					<< detailt[0].dibeli[j].hargabeli << ' '
 					<< detailt[0].dibeli[j].hargajual << ' '
-					<< detailt[0].dibeli[j].qty << ' '
-					<< detailt[0].totalbayar <<' ';
+					<< detailt[0].dibeli[j].qty << ' ';
 					if(j == banyakbarang-1)
 						ofs << '*';
 					else 
@@ -903,6 +948,46 @@ do{
 		
 }
 
+int penjualan(){
+	int akhir;
+	int untung;
+	akhir = carilineinvoice();
+	ifstream fs;
+	fs.open("datatransaksi.txt",ios::in);
+	if(fs){
+		int i=0;
+		int j=0;
+		char c;
+		fs.seekg(0,ios::beg);
+		while(!fs.eof() && i < akhir){
+			int indeks = i;
+			if(indeks == i){
+				fs >> transaksitemp[1].c_invoice;
+			do{
+			fs >> transaksitemp[1].dibeli[j].barcode 
+			>> transaksitemp[1].dibeli[j].nama  
+			>> transaksitemp[1].dibeli[j].hargabeli
+			>> transaksitemp[1].dibeli[j].hargajual 
+			>> transaksitemp[1].dibeli[j].qty 
+			>> c;
+			j++;
+			}while(c == '#');
+			untung += (transaksitemp[1].dibeli[j].hargajual - 
+						 transaksitemp[1].dibeli[j].hargabeli) *
+						 transaksitemp[1].dibeli[j].qty ;
+		}
+			i++; 
+			
+		}
+		fs.close();
+		return(untung);
+	}
+	else 
+		return(-1);
+	
+	
+}
+
 main(){
 	int LOGIN_ACCESS = 1; //0 = admin, 1 = cashier 
 	int LAYERMENU = 1; //semakin tinggi angkanya, semakin dalam lapisannya.
@@ -910,7 +995,7 @@ main(){
 do{
 	system("cls");
 
-	//login(&LOGIN_ACCESS);
+	login(&LOGIN_ACCESS);
 	system("color 0a");
 	//logo();
 
@@ -968,7 +1053,11 @@ cout << setw(4) << ' ' << "               \\/     \\/\\______|          \\/     
 					
 					cout << setfill('=') << setw(120) << ' ' << endl;
 					cout << setfill(' ');
-					cout << setw(4) << ' ' << "\nTOTAL KEUNTUNGAN : ";
+					if(penjualan() != -1){
+					cout << setw(4) << ' ' << "\nTOTAL KEUNTUNGAN : Rp." << penjualan();
+					}
+					else 
+						cout << "Data belum ada!";
 					cout << "\n\n";
 					cout << setfill('=') << setw(120) << ' ' << endl;
 					cout << setfill(' ');
