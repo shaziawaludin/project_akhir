@@ -19,8 +19,8 @@ struct barang{
 struct transaksi{
 	string c_invoice;
 	barang dibeli[300];
-	
 };
+
 barang detailbarang[2];
 barang BarangSorted[1000];
 string sortingtemp[1000];
@@ -123,7 +123,7 @@ void modify(){
 	string databaru;
 	
 	
-	if(found && line >1)
+	if(found && line > 1)
 		{	cout << setfill('<') << setw(120)<<' ';
 			cout << setfill(' ');
 			cout << setw(4) << ' ' <<  "[DATA BARU] >> \n";
@@ -133,15 +133,17 @@ void modify(){
 			cout << setw(8) << ' ' << "Password : ";
 			getline(cin,userinput);
 			databaru += userinput;
+			delete_line("pass.txt",line);
+			input_line("pass.txt",databaru);
 		}
+	else if(found && line == 1) cout << "Kamu tidak dapat merubah admin";
 	else if(!found)
 	{
 		cout << setfill('>') << setw(120)<<' ';
 		cout << setfill(' ');
 		cout << "\nDATA TIDAK DITEMUKAN\n";
 	}
-	delete_line("pass.txt",line);
-	input_line("pass.txt",databaru);
+
 }
 
 void login(int *LOGIN_ACCESS){
@@ -345,6 +347,7 @@ void sortbarcode(){
 			i++;
 		}
 		
+		
 		for(int index1 = 0; index1 < i-1; index1++){
 			selected = index1;
 			for(int index2 = index1 + 1; index2 < i ; index2++){
@@ -356,8 +359,10 @@ void sortbarcode(){
 				barcode2 = barcode2.substr(2,7);
 				stringstream toint2(barcode2);
 				toint2 >> temp2;
+				
 				if(temp1 > temp2)
 					selected = index2;
+					
 				detailbarang[1].barcode = BarangSorted[selected].barcode;
 				detailbarang[1].nama = BarangSorted[selected].nama;
 				detailbarang[1].hargabeli = BarangSorted[selected].hargabeli;
@@ -560,7 +565,6 @@ bool ULANG = false;
 do{ 
 	
 	do{
-		
 		cout << setw(4) << ' ' << " _____                  _    ______                             \n";
 		cout << setw(4) << ' ' << "|_   _|                | |   | ___ \\                            \n";
 		cout << setw(4) << ' ' << "  | | _ __  _ __  _   _| |_  | |_/ / __ _ _ __ __ _ _ __   __ _ \n";
@@ -767,7 +771,7 @@ cout << "                               -~ -._  `-.  -. `-._``--.._.--''. \n";
 cout << "                                    ~ ~-.__     -._  `-.__   `. `. \n";
 cout << "                                      SA~ ~~ ~---...__ _    ._ .` `. \n";
 cout << "                                                      ~  ~--.....--~ \n";
-Sleep(100);
+Sleep(100); 
 		exit(1);
 	}
 	system("cls");
@@ -1004,15 +1008,19 @@ do{
 		
 }
 
+int penjumlahanpenjualan(int *untungpertransaksi, int i){
+	if(i < 0) return 0;
+	else{
+		return untungpertransaksi[i] + penjumlahanpenjualan(untungpertransaksi,i-1); 
+	}
+}
 int penjualan(){
-	int akhir;
-	int untung;
+	int akhir, untung, untungpertransaksi[10000] = {0};
 	akhir = carilineinvoice();
 	ifstream fs;
+	int i=0, j=0;;
 	fs.open("datatransaksi.txt",ios::in);
 	if(fs){
-		int i=0;
-		int j=0;
 		char c;
 		fs.seekg(0,ios::beg);
 		while(!fs.eof() && i < akhir){
@@ -1024,28 +1032,24 @@ int penjualan(){
 			>> transaksitemp[1].dibeli[j].nama  
 			>> transaksitemp[1].dibeli[j].hargabeli
 			>> transaksitemp[1].dibeli[j].hargajual 
-			>> transaksitemp[1].dibeli[j].qty 
-			>> c;
-			j++;
-			}while(c == '#');
-			untung += (transaksitemp[1].dibeli[j].hargajual - 
-						 transaksitemp[1].dibeli[j].hargabeli) *
-						 transaksitemp[1].dibeli[j].qty ;
-		}
-			i++; 
-			
-		}
+			>> transaksitemp[1].dibeli[j].qty >> c;
+			untungpertransaksi[i] += 
+(transaksitemp[1].dibeli[j].hargajual -
+transaksitemp[1].dibeli[j].hargabeli) *
+transaksitemp[1].dibeli[j].qty;
+			j++;		 
+			}while(c == '#'); }
+			i++; j=0; }
 		fs.close();
+		untung = penjumlahanpenjualan(untungpertransaksi,i-1);
 		return(untung);
 	}
 	else 
 		return(-1);
-	
-	
 }
 
 main(){
-	int LOGIN_ACCESS = 1; //0 = admin, 1 = cashier 
+	int LOGIN_ACCESS = 0; //0 = admin, 1 = cashier 
 	int LAYERMENU = 1; //semakin tinggi angkanya, semakin dalam lapisannya.
 	bool BACKVALIDATION = true;
 do{
@@ -1053,7 +1057,7 @@ do{
 
 	login(&LOGIN_ACCESS);
 	system("color 0a");
-	logo();
+	//logo();
 	
 	char MENU = 0;
 	///main menu//
@@ -1305,6 +1309,8 @@ cout << setw(4) << ' ' << "        \\/      \\/                    \\/     \\/  
 							cout << setfill('=') << setw(120) << '=' << endl;
 							cout << setfill(' ');	
 							modify();
+							cout << endl;
+							system("pause");
 						break;
 						}
 						case '3':{
